@@ -25,14 +25,13 @@ exports.postAddUser = async (req,res,next) => {
         res.status(500).json({error:error})
     }
 }
-exports.postDeleteUser = async (req,res, next) => {
+exports.postDeleteUser = async (req,res,next) => {
     try {
-        const reqId = req.params.id;
-        console.log(reqId)
-    // await User.destroy({where:{id:reqId}})
-    // res.sendStatus(200);
+        const uId = req.params.id
+        await User.destroy({where: {id: uId}})
+        res.sendStatus(200);
     } catch (error) {
         console.log(error);
-        res.status(500).json({error:error});
+        res.status(500).json({error:error})
     }
 }

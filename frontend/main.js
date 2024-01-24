@@ -9,15 +9,21 @@ const userEmail = $("#useremail");
 const usersContainer = $("#usersCard");
 const formContainer = $("#mainCard");
 const usersList = $("#users");
-const key = "bookingdata";
-const URL = `https://crudcrud.com/api/2b7b9cecdceb4ec08f122292834456a3/${key}`;
+const server = `http://localhost:3000`
+const domainName = 'user';
+const getUser = `/get-users`
+const addUser = `/add-user`
+const deleteUser = `/delete-user`
 
 /////////////////////////////////////////Functions////////////////////////////////////////////////
 ///////////////////////////Utility functions//////////////////////////////
 
-const getRequest = () => axios.get("http://localhost:3000/user/get-users");
-const postRequest = (load) => axios.post("http://localhost:3000/user/add-user", load);
-const deleteRequest = (id) => axios.post(`http://localhost:3000/user/delete-user}`);
+// const getRequest = (key) => axios.get("http://localhost:3000/user/get-users");
+const getRequest = (host,key) => axios.get(`${host}/${key}${getUser}`);
+// const postRequest = (load) => axios.post("http://localhost:3000/user/add-user", load);
+const postRequest = (host, key,load) => axios.post(`${host}/${key}${addUser}`, load);
+// const deleteRequest = (id) => axios.delete(`http://localhost:3000/user/delete-user/${id}`);
+const deleteRequest = (host,key,id) => axios.delete(`${host}/${key}${deleteUser}/${id}`);
 
 //reject a network call
 const rejectCall = function () {
@@ -76,7 +82,6 @@ const ShowOnUi = function (userData) {
     <div><strong>User E-Mail : </strong>${userData.useremail}</div>
     <div class="d-grid gap-2 mt-2 d-md-flex justify-content-md-end">
       <form action=/user/delete-product method=Post>
-      <input type=hidden value=${userData.id} name=userID>
       <button class="btn btn-outline-danger delete btn-sm" type="button">Delete</button>
       </form>
     </div>
@@ -88,11 +93,11 @@ const ShowOnUi = function (userData) {
 };
 
 /// Initial for every loading
-const init = async function (key) {
+const init = async function (host,key) {
   try {
     const Msg = "you don't have any Data";
-    const dataBase = await Promise.race([getRequest(), rejectCall()]);
-    console.log(dataBase)
+    const dataBase = await Promise.race([getRequest(host,key), rejectCall()]);
+
     if (dataBase?.data.length === 0) {
       throw new Error(Msg);
     } else {
@@ -108,11 +113,11 @@ const init = async function (key) {
 
 ////////////////////////////////////////CallBack Functions for event callback function ///////////////////////////
 // Adding new data
-const addNewData = async function (userData) {
+const addNewData = async function (host,key,userData) {
   try {
     await util(userData);
-    const response = await Promise.race([postRequest(userData), rejectCall()]);
-    console.log(response)
+    const response = await Promise.race([postRequest(host,key,userData), rejectCall()]);
+
     ShowOnUi(response.data.newUserDetails);
     if (usersContainer.childElementCount === 1) 
       displayContainer("remove");
@@ -124,10 +129,12 @@ const addNewData = async function (userData) {
 };
 
 // Removing Existing Data
-const removeData = async function (li) {
+const removeData = async function (host,key,li) {
+
   if (confirm("Are you Sure?")) {
     try {
-      const res =await Promise.race([deleteRequest(li.id), rejectCall()]);
+      const id =li.id;
+      const res =await Promise.race([deleteRequest(host,key,id), rejectCall()]);
       console.log(res)
       usersList.removeChild(li);
       if (usersList.childElementCount === 0) 
@@ -149,7 +156,7 @@ const formSubmit = function (e) {
       usercontact: userContact.value,
       useremail: userEmail.value,
     };
-    addNewData(userData);
+    addNewData(server,domainName,userData);
   } catch (error) {
     console.error(error);
   }
@@ -157,11 +164,11 @@ const formSubmit = function (e) {
 
 //Data removing  event Callback
 const delBtn = function (e) {
-  const li = e.target.parentElement.parentElement;
-  removeData(li);
+  const li = e.target.parentElement.parentElement.parentElement;
+  removeData(server,domainName,li);
 };
 
 //eventListener
 form.addEventListener("submit", formSubmit);
 usersList.addEventListener("click", delBtn);
-window.addEventListener("DOMContentLoaded", init.bind(null, key));
+window.addEventListener("DOMContentLoaded", init.bind(null, server,domainName));

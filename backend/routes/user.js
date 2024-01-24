@@ -7,6 +7,7 @@ router.post('/user/add-user', userController.postAddUser);
 
 router.get('/user/get-users', userController.getUsers);
 
-// router.post('/user/delete-product/:id', userController.postDeleteUser);
+router.delete('/user/delete-user/:id', userController.postDeleteUser);
+
 
 module.exports = router;
