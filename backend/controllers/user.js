@@ -11,9 +11,11 @@ exports.getUsers = async (req, res, next) => {
 }
 exports.postAddUser = async (req,res,next) => {
     try {
+       
         const username = req.body.username;
         const usercontact = req.body.usercontact;
         const useremail = req.body.useremail;
+        
         const data = await User.create({
             username:username,
             usercontact:usercontact,

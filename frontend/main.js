@@ -98,7 +98,7 @@ const init = async function (host,key) {
     const Msg = "you don't have any Data";
     const dataBase = await Promise.race([getRequest(host,key), rejectCall()]);
 
-    if (dataBase?.data.length === 0) {
+    if (dataBase?.data?.allUsers.length === 0) {
       throw new Error(Msg);
     } else {
       dataBase.data.allUsers.forEach((item) => ShowOnUi(item));
@@ -117,7 +117,7 @@ const addNewData = async function (host,key,userData) {
   try {
     await util(userData);
     const response = await Promise.race([postRequest(host,key,userData), rejectCall()]);
-
+    console.log(response)
     ShowOnUi(response.data.newUserDetails);
     if (usersContainer.childElementCount === 1) 
       displayContainer("remove");
@@ -155,7 +155,9 @@ const formSubmit = function (e) {
       username: userName.value,
       usercontact: userContact.value,
       useremail: userEmail.value,
+      
     };
+    
     addNewData(server,domainName,userData);
   } catch (error) {
     console.error(error);
